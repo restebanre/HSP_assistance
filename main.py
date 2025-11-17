@@ -17,10 +17,12 @@ def print_hi(name):
 #     print_hi('PyCharm')
 
 if __name__ == '__main__':
-    measures = scrape_sensitivity_measures()
-    print(measures)
-    if measures:
-        save_data(measures, 'measures.csv')
+    df_measures = scrape_sensitivity_measures()
+    print(df_measures)
+    if not df_measures.empty:
+        df_measures.to_csv("measures.csv", index=False)
+
+        # save_data(measures, 'measures.csv')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 

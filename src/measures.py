@@ -1,51 +1,64 @@
 # src/measures.py
 import pandas as pd
-from src.utils import get_soup, parse_sociodemographics, BASE_URL, save_data
+from src.utils import get_soup, BASE_URL, save_data
 
 URL_MEASURES = f"{BASE_URL}/research/sensitivity-measures/"
 
 
-def scrape_sensitivity_measures():
+def scrape_sensitivity_measures() -> pd.DataFrame:
     """
     Extrae la tabla de medidas de sensibilidad y aplica expresiones regulares.
 
     Returns:
-        list: Una lista de diccionarios con los datos de las medidas.
+        df: Dataframe con los datos de las medidas.
     """
     soup = get_soup(URL_MEASURES)
     if not soup:
-        return []
+        return pd.DataFrame([])
 
-    measures_data = []
-    # La tabla principal en la página está contenida en una estructura específica
-    # Se asume que es la única tabla o la más relevante
-    table = soup.find('table')
+    # measures_data = []
 
-    if table:
-        # Saltar la cabecera (thead)
-        rows = table.find('tbody').find_all('tr')
 
-        for row in rows:
-            cols = row.find_all(['td', 'th'])
-            if len(cols) >= 5:  # Asumiendo que hay 5 columnas (o más) para extraer
+    # La tabla principal es la unica exitente en la página y porta
+    # un id especifico en su estructura que nos ayuda a identificarla
+    # Nota: Encabezado y cuerpo de la tabla no estan embedidos conjuntamente
+    # en la estructura de la tabla.
 
-                measure_name = cols[0].get_text(strip=True)
-                items_count = cols[1].get_text(strip=True)
-                # La columna 4 (índice 3) contiene las características sociodemográficas.
-                characteristics_text = cols[3].get_text(strip=False)
+    table = soup.find('table', {"id": "tablepress-1"})
+    if not table:
+        raise ValueError("No se encontro tabla de medidas")
 
-                # Aplicar RegEx desde utils.py
-                ages, genders, diagnoses = parse_sociodemographics(characteristics_text)
+    # Extraemos primeramente los encabezados
+    headers = []
+    thead = soup.find("thead")
+    if thead:
+        header = thead.find("tr")
+        for th in header.find_all("th"):
+            span = th.select_one("span.dt-column-title")
+            if span:
+                labels = span.get_text(strip=True)
+            else:
+                labels = th.get_text(strip=True)
+            print(type(labels))
+            print(labels)
+            headers.append(labels)
 
-                measures_data.append({
-                    'Measure Name': measure_name,
-                    'Items Count': items_count,
-                    'Sociodemographics (Raw)': characteristics_text.replace('\n', ' ').strip(),
-                    'Age Groups (RegEx)': ages,
-                    'Gender (RegEx)': genders,
-                    'Diagnosis (RegEx)': diagnoses,
-                })
+    # Extraemos las fiilas de datos
+    rows = []
+    tbody = table.find("tbody")
+    if tbody:
+        for tr in tbody.find_all("tr"):
+            row = []
+            for td in tr.find_all("td"):
+                # Pulimos el contenido de las celdas
+                # y eliminamos saltos de linea
+                cell = td.get_text(strip=True)
+                cell = " ".join(cell.split())
+                row.append(cell)
+            rows.append(row)
 
-    return measures_data
+    # Formateamos los datos en DataFrame
+    df = pd.DataFrame(rows, columns=headers)
+    return df
 
 
