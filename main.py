@@ -20,14 +20,14 @@ if __name__ == '__main__':
     df_measures = scrape_sensitivity_measures()
     print(df_measures)
     if not df_measures.empty:
-        df_measures.to_csv("measures.csv", index=False)
+        df_measures.to_csv(f"data/measures.csv", sep='\t', index=False, encoding='utf-8')
 
         # save_data(measures, 'measures.csv')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
 # if __name__ == '__main.ipynb__':
-    researchers = scrape_researchers_from_directory()
-    print(researchers)
-    if researchers:
-        save_data(researchers, 'researchers.csv')
+    # researchers = scrape_researchers_from_directory()
+    # print(researchers)
+    # if researchers:
+        # save_data(researchers, 'researchers.csv')

@@ -32,33 +32,38 @@ def scrape_sensitivity_measures() -> pd.DataFrame:
     headers = []
     thead = soup.find("thead")
     if thead:
-        header = thead.find("tr")
-        for th in header.find_all("th"):
-            span = th.select_one("span.dt-column-title")
-            if span:
-                labels = span.get_text(strip=True)
-            else:
-                labels = th.get_text(strip=True)
-            print(type(labels))
-            print(labels)
-            headers.append(labels)
+        header = thead.find_all("th")
+        print(header)
+        for th in header:
+            if th:
+                headers.append(th.text.strip())
+                print(headers)
+    else:
+        print("Atencion: Alguna etiqueta de la cabecra \
+        no ha podido ser recuperarda")
+        # Tabla tiene 5 columnas
+        headers = [f'Column {i+1}' for i in range(5)]
+        print(headers)
 
     # Extraemos las fiilas de datos
-    rows = []
-    tbody = table.find("tbody")
-    if tbody:
-        for tr in tbody.find_all("tr"):
-            row = []
-            for td in tr.find_all("td"):
+    table_data = []
+    if table.find("tbody"):
+        rows = table.find("tbody").find_all("tr")
+        for row in rows:
+            row_data = []
+            cells = row.find_all("td")
+            for cell in cells:
                 # Pulimos el contenido de las celdas
-                # y eliminamos saltos de linea
-                cell = td.get_text(strip=True)
-                cell = " ".join(cell.split())
-                row.append(cell)
-            rows.append(row)
+                # y eliminamos saltos de linea y multiples
+                # espacios
+                cell = cell.text.strip()
+                cell = cell.replace('\n', ' ')
+                cell = cell.replace('  ', ' ')
+                row_data.append(cell)
+            table_data.append(row_data)
 
     # Formateamos los datos en DataFrame
-    df = pd.DataFrame(rows, columns=headers)
+    df = pd.DataFrame(table_data, columns=headers)
     return df
 
 
