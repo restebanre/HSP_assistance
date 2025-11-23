@@ -5,8 +5,10 @@
 
 from src.utils import save_data
 from src.measures import scrape_sensitivity_measures
-from src.researchers import scrape_researchers_from_directory
+from src.researchers import *
 
+from src.utils import *
+global df_researchers
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
@@ -31,3 +33,16 @@ if __name__ == '__main__':
     # print(researchers)
     # if researchers:
         # save_data(researchers, 'researchers.csv')
+
+# if __name__ == '__main.ipynb__':
+    lst = scrape_researchers_from_directory()
+    # print(df_researchers)
+
+    for i in range(1):
+        df_researchers = write_directory(lst)
+        # print(get_researcher_url_by_index(i, df_researchers))
+        url= get_researcher_url_by_index(i, df_researchers)
+        scrape_researcher_details(url)
+
+    if not df_researchers.empty:
+        df_researchers.to_csv(f"data/researchers.csv", sep='\t', index=False, encoding='utf-8')

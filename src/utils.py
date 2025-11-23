@@ -7,6 +7,7 @@ import pandas as pd
 from typing import List, Dict, Optional
 from pathlib import Path
 
+global df_researchers
 
 BASE_URL = "https://sensitivityresearch.com"
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
@@ -15,7 +16,7 @@ DATA_DIR = Path("data")
 
 def get_soup(url, delay=2):
     """Realiza una petición HTTP con un delay ético y devuelve un objeto BeautifulSoup."""
-    print(f"-> Solicitando URL: {url}")
+    # print(f"-> Solicitando URL: {url}")
     time.sleep(delay)  # pausa entre requests para no sobrecargar el servidor
 
     try:
@@ -25,6 +26,16 @@ def get_soup(url, delay=2):
     except requests.exceptions.RequestException as e:
         print(f"Error al solicitar {url}: {e}")
         return None
+
+def write_directory(directory: List[dict]):
+    """Guarda una lista de diccionarios en un archivo CSV."""
+    return pd.DataFrame(directory)
+
+def get_researcher_url_by_index(index_nb: int, df: pd.DataFrame) -> str:
+    """Guarda una lista de diccionarios en un archivo CSV."""
+    #global df_researchers
+    researcher_url = df.loc[index_nb, "Profile URL"]
+    return researcher_url
 
 
 def parse_sociodemographics(text):
