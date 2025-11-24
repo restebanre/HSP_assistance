@@ -27,7 +27,7 @@ def get_soup(url, delay=2):
         print(f"Error al solicitar {url}: {e}")
         return None
 
-def write_directory(directory: List[dict]):
+def list_to_dataframe(directory: List[dict]):
     """Guarda una lista de diccionarios en un archivo CSV."""
     return pd.DataFrame(directory)
 
@@ -35,6 +35,8 @@ def get_researcher_url_by_index(index_nb: int, df: pd.DataFrame) -> str:
     """Guarda una lista de diccionarios en un archivo CSV."""
     #global df_researchers
     researcher_url = df.loc[index_nb, "Profile URL"]
+    print(f'ESTE TIPO ES DEL URL {type(researcher_url)}')
+    print(f'URL: {researcher_url}')
     return researcher_url
 
 

@@ -1,6 +1,5 @@
 # src/measures.py
-import pandas as pd
-from src.utils import get_soup, BASE_URL, save_data
+from src.utils import *
 
 URL_MEASURES = f"{BASE_URL}/research/sensitivity-measures/"
 

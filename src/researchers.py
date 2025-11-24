@@ -65,24 +65,23 @@ def scrape_researchers_from_directory() -> List[Dict]:
             print(f"Error procesando investigador: {e}")
             continue
 
-
-
     return entry_directory
 
 
-def scrape_researcher_details(profile_url: str):
+
+def scrape_researcher_details(profile_url: str) -> Dict:
     """Extrae datos detallados (Expertise, Contacto) de la página individual."""
     global info_paragraph
     """Extrae datos detallados (Expertise, Contacto) de la página individual."""
 
     soup = get_soup(profile_url)
 
-    details = {
-        'Full Expertise': '',
-        'Email': '',
-        'Discipline': '',
-        'Location': ''
-    }
+    # details = {
+    #     'Full Expertise': '',
+    #     'Email': '',
+    #     'Discipline': '',
+    #     'Location': ''
+    # }
 
     researcher_card = {
         'Name': None,
@@ -199,3 +198,17 @@ def scrape_researcher_details(profile_url: str):
     # Aplicamos RegEx para extraer emails (patrón general: user@domain.tld)
     print(researcher_card)
     return researcher_card
+
+def compile_researcher_directory(directory: List[Dict]) -> pd.DataFrame:
+
+
+    directory_list = []
+    df_url_directory = list_to_dataframe(directory)
+
+    for idx in range(len(directory)):
+        url= get_researcher_url_by_index(idx, df_url_directory)
+        details = scrape_researcher_details(url)
+        directory_list.append(details)
+
+    print(f'DIRECTORY LIST: {directory_list}')
+    return pd.DataFrame(directory_list)
