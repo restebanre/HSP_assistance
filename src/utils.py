@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from typing import List, Dict, Optional
 from pathlib import Path
+import pandas as pd
+from src.features import FeatureMarker
 
 global df_researchers
 
@@ -39,41 +41,40 @@ def get_researcher_url_by_index(index_nb: int, df: pd.DataFrame) -> str:
     print(f'URL: {researcher_url}')
     return researcher_url
 
-
-def parse_sociodemographics(text):
+def feature_extraction_pipeline(df_initial: pd.DataFrame) -> pd.DataFrame:
     """
-    Aplica expresiones regulares para extraer edad, género y posibles diagnósticos.
+    Función principal que ejecuta toda la tubería (pipeline) de extracción
+    de características a partir del DataFrame inicial.
 
     Args:
-        text (str): La cadena de texto de la columna de características sociodemográficas.
+        df_initial: El DataFrame de pandas con las 5 columnas iniciales.
 
     Returns:
-        tuple: (edad_str, genero_str, diagnosticos_str)
+        Un DataFrame de pandas con las 7 características extraídas.
     """
-    text = str(text).upper() if text else ""
 
-    # 1. Edades: Busca patrones como XX-YY YEARS, >XX, o XX to YY
-    age_pattern = re.compile(r'(\d+[-\s]?\d+\s?YEARS?|\>\s?\d+|\d+\s?TO\s?\d+)', re.IGNORECASE)
-    ages = "; ".join(age_pattern.findall(text))
+    # 1. Instanciar la clase FeatureExtractor con el DataFrame inicial
+    extractor = FeatureMarker(df_initial)
 
-    # 2. Género: Busca MALE, FEMALE, WOMEN, MEN
-    gender_pattern = re.compile(r'(MALE|FEMALE|WOMEN|MEN|NON-BINARY)', re.IGNORECASE)
-    genders = "; ".join(gender_pattern.findall(text))
+    # 2. Ejecutar los métodos de extracción secuencialmente
+    # Nota: Los métodos se encadenan al modificar internamente el DataFrame (self.df)
+    # y devolverlo para el siguiente paso (aunque aquí no estamos encadenando directamente).
 
-    # 3. Diagnósticos comunes (Ejemplo): Busca HSP, ADHD, ASD, PTSD, etc.
-    diag_pattern = re.compile(r'(HSP|SPS|ADHD|ASD|AUTISM|ANXIETY|DEPRESSION|PTSD|NEURODIVERS(E|ITY))', re.IGNORECASE)
-    diagnoses = "; ".join(set(diag_pattern.findall(text)))  # Usar set para únicos
+    extractor.extract_target_environment()
+    extractor.extract_number_of_items()
+    extractor.extract_brief_description()
+    extractor.extract_target_population()
+    extractor.extract_age_range()
 
-    return ages, genders, diagnoses
+    # 3. Seleccionar las columnas finales y renombrar
+    df_result = extractor.select_and_rename_final_columns()
 
-
-
-
+    return df_result
 
 def save_dataframe_to_csv(df: pd.DataFrame, filename):
     """Guarda una lista de diccionarios en un archivo CSV."""
 
-    df.to_csv(f"data/{filename}", index=False, encoding='utf-8')
+    df.to_csv(f"data/{filename}.csv", index=False, encoding='utf-8')
     print(f"\nDatos guardados exitosamente en data/{filename}")
     return
 
