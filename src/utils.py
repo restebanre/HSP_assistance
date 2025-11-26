@@ -67,6 +67,16 @@ def parse_sociodemographics(text):
     return ages, genders, diagnoses
 
 
+
+
+
+def save_dataframe_to_csv(df: pd.DataFrame, filename):
+    """Guarda una lista de diccionarios en un archivo CSV."""
+
+    df.to_csv(f"data/{filename}", index=False, encoding='utf-8')
+    print(f"\nDatos guardados exitosamente en data/{filename}")
+    return
+
 def save_data(data: List[Dict], filename):
     """Guarda una lista de diccionarios en un archivo CSV."""
     df = pd.DataFrame(data)

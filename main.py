@@ -26,11 +26,6 @@ if __name__ == '__main__':
     directory = scrape_researchers_from_directory()
 
     df_researchers = compile_researcher_directory(directory)
-    print(df_researchers)
-    # for idx in range(len(directory)):
-    #     df_directory = write_directory(directory)
-    #     url= get_researcher_url_by_index(idx, df_directory)
-    #     df_researchers = scrape_researcher_details(url)
 
     if not df_researchers.empty:
         df_researchers.to_csv(f"data/researchers.csv", sep='\t', index=False, encoding='utf-8')
