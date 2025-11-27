@@ -205,7 +205,7 @@ def compile_researcher_directory(directory: List[Dict]) -> pd.DataFrame:
     directory_list = []
     df_url_directory = list_to_dataframe(directory)
 
-    for idx in range(len(directory)):
+    for idx in range(len(directory)): # len(directory)
         url= get_researcher_url_by_index(idx, df_url_directory)
         details = scrape_researcher_details(url)
         directory_list.append(details)
