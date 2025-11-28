@@ -76,20 +76,12 @@ def scrape_researcher_details(profile_url: str) -> Dict:
 
     soup = get_soup(profile_url)
 
-    # details = {
-    #     'Full Expertise': '',
-    #     'Email': '',
-    #     'Discipline': '',
-    #     'Location': ''
-    # }
-
     researcher_card = {
         'Name': None,
         'Title': None,
-        'Institution': None,
         'Expertise': None,
         'Discipline of research': None,
-        'Location': None,
+        'Institution': None,
         'Contact':None
     }
 
@@ -129,10 +121,10 @@ def scrape_researcher_details(profile_url: str) -> Dict:
 
         researcher_card['Expertise'] = re.sub(r'\s+', ' ', cleaned_paragraph).strip()
             #(expertise_section.find('h3').g.get_text(strip=True))
-        print(researcher_card)
+        # print(researcher_card)
 
     #---------------------------------------
-    # 2do bloque: disciplina, ubicacion e e-mail
+    # 2do bloque: disciplina, Institucion e e-mail
     #---------------------------------------
 
     card_section = card_details.select_one('.fl-col:nth-of-type(2) .fl-module-html .fl-html')
@@ -141,7 +133,7 @@ def scrape_researcher_details(profile_url: str) -> Dict:
     # recuperamos una lista por balizas de <p>
     if card_section:
         info_paragraph = card_section.find_all('p')
-        print(f'Bloque 2 {info_paragraph}')
+        # print(f'Bloque 2 {info_paragraph}')
 
     # 1. Disciplina de investigacion
     if len(info_paragraph) > 0:
@@ -154,28 +146,26 @@ def scrape_researcher_details(profile_url: str) -> Dict:
             researcher_card['Discipline of research'] = re.sub(r'\s+', ' ', discipline).strip()
         else:
             researcher_card['Discipline of research'] = 'N/A'
-        print(researcher_card['Discipline of research'])
+        # print(researcher_card['Discipline of research'])
 
     #2. Ubicacion
     if len(info_paragraph) > 1:
-        print(f'info {info_paragraph[1]}')
+        # print(f'info {info_paragraph[1]}')
         # texto se encuentra despues de un <br/>
         tag_location = info_paragraph[1]
-        print(f' tag_loc {tag_location}')
+        # print(f' tag_loc {tag_location}')
         buffer2 = tag_location.text.strip()
         feature2 = 'Location:'
-        print(f'buffer {buffer2}')
+        # print(f'buffer {buffer2}')
 
         if feature2 in buffer2:
             tag_location = buffer2.split(feature2, 1)[1].strip()
-            print(f' tag_loc_2 {tag_location}')
+            # print(f' tag_loc_2 {tag_location}')
             chunks_location = [chunk.strip(",").strip() for chunk in tag_location.split('\n') if chunk.strip()]
-            #location = tag_location.next_sibling.strip().strip('"')
-            #researcher_card['Location'] = re.sub(r'\s+', ' ', location).strip()
-            researcher_card['Location'] = ', '.join(chunks_location)
+            researcher_card['Institution'] = ', '.join(chunks_location)
         else:
-            researcher_card['Location'] = 'N/A'
-        print(researcher_card['Location'])
+            researcher_card['Institution'] = 'N/A'
+        # print(researcher_card['Institution'])
 
     # 3. Contacto
     if len(info_paragraph) > 2:
@@ -186,7 +176,7 @@ def scrape_researcher_details(profile_url: str) -> Dict:
             researcher_card['Contact'] = contacto.text.strip()
         else:
             researcher_card['Contact'] = 'N/A'
-        print(researcher_card['Contact'])
+        # print(researcher_card['Contact'])
 
 
 
@@ -196,11 +186,11 @@ def scrape_researcher_details(profile_url: str) -> Dict:
 
     # 2. Contacto (Buscamos un patrón de email)
     # Aplicamos RegEx para extraer emails (patrón general: user@domain.tld)
-    print(researcher_card)
+    # print(researcher_card)
     return researcher_card
 
-def compile_researcher_directory(directory: List[Dict]) -> pd.DataFrame:
 
+def compile_researcher_directory(directory: List[Dict]) -> pd.DataFrame:
 
     directory_list = []
     df_url_directory = list_to_dataframe(directory)
@@ -210,5 +200,5 @@ def compile_researcher_directory(directory: List[Dict]) -> pd.DataFrame:
         details = scrape_researcher_details(url)
         directory_list.append(details)
 
-    print(f'DIRECTORY LIST: {directory_list}')
+    # print(f'DIRECTORY LIST: {directory_list}')
     return pd.DataFrame(directory_list)

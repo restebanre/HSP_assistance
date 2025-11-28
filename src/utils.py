@@ -39,8 +39,8 @@ def get_researcher_url_by_index(index_nb: int, df: pd.DataFrame) -> str:
     """Guarda una lista de diccionarios en un archivo CSV."""
     #global df_researchers
     researcher_url = df.loc[index_nb, "Profile URL"]
-    print(f'ESTE TIPO ES DEL URL {type(researcher_url)}')
-    print(f'URL: {researcher_url}')
+    # print(f'ESTE TIPO ES DEL URL {type(researcher_url)}')
+    # print(f'URL: {researcher_url}')
     return researcher_url
 
 def feature_extraction_pipeline(df_initial: pd.DataFrame) -> pd.DataFrame:
@@ -95,49 +95,60 @@ def expertise_extraction_pipeline(df_initial: pd.DataFrame, text_column: str):
 
     word_freq = tokenizer.get_word_frequency()
     print("Palabras más comunes:")
-    print(word_freq.most_common(20))
+    print(word_freq.most_common(30))
 
     tokenizer.generate_wordcloud(save_path="./data/wordcloud.png")
 
     bigram_freq = tokenizer.get_ngram_frequency(n=2, language='english')
     print("Bigramas más comunes:")
-    print(bigram_freq.most_common(20))
+    print(bigram_freq.most_common(30))
 
     trigram_freq = tokenizer.get_ngram_frequency(n=3, language='english')
     print("Trigramas más comunes:")
-    print(trigram_freq.most_common(20))
+    print(trigram_freq.most_common(30))
 
 
     # 3. Seleccionar las columnas finales y renombrar
     # df_result = tokenizer.select_and_rename_final_columns()
 
-    top_bigrams = tokenizer.get_top_ngrams(n=2, top_n=20)
-    print("Top Bigrams:")
+    top_words = tokenizer.get_top_ngrams(n=1, top_n=30)
+    print("Palabras más comunes:")
+    print(top_words)
+
+    # Nueva columna de ngrams comunes con cada investigador
+    tokenizer.add_ngrams_column(n=1, list_ngrams=top_words, new_column_name='Expertise_By_words')
+
+    top_bigrams = tokenizer.get_top_ngrams(n=2, top_n=30)
+    print("Bigrams más comunes:")
     print(top_bigrams)
 
     # Nueva columna de ngrams comunes con cada investigador
-    tokenizer.add_ngrams_column(top_bigrams, new_column_name='Expertise_Bigrams')
+    tokenizer.add_ngrams_column(n=2, list_ngrams=top_bigrams, new_column_name='Expertise_Bigrams')
 
     top_trigrams = tokenizer.get_top_ngrams(n=3, top_n=10)
-    print("Top Trigrams:")
+    print("Trigrams más comunes:")
     print(top_trigrams)
 
     # Nueva columna de ngrams comunes con cada investigador
-    tokenizer.add_ngrams_column(top_trigrams, new_column_name='Expertise_Trigrams')
-
+    tokenizer.add_ngrams_column(n=3, list_ngrams=top_trigrams, new_column_name='Expertise_Trigrams')
 
     return
+
 
 def save_dataframe_to_csv(df: pd.DataFrame, filename):
     """Guarda una lista de diccionarios en un archivo CSV."""
 
     df.to_csv(f"data/{filename}.csv", index=False, encoding='utf-8')
+
     print(f"\nDatos guardados exitosamente en data/{filename}")
     return
+
 
 def save_data(data: List[Dict], filename):
     """Guarda una lista de diccionarios en un archivo CSV."""
     df = pd.DataFrame(data)
     df.to_csv(f"data/{filename}", index=False, encoding='utf-8')
+
     print(f"\nDatos guardados exitosamente en data/{filename}")
     return df
+

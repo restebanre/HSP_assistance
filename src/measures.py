@@ -33,7 +33,7 @@ def scrape_sensitivity_measures() -> pd.DataFrame:
     thead = soup.find("thead")
     if thead:
         header = thead.find_all("th")
-        print(header)
+        # print(header)
         for th in header:
             if th:
                 headers.append(th.text.strip())
@@ -43,7 +43,7 @@ def scrape_sensitivity_measures() -> pd.DataFrame:
         no ha podido ser recuperarda")
         # Tabla tiene 5 columnas
         headers = [f'Column {i+1}' for i in range(5)]
-        print(headers)
+        # print(headers)
 
     # Extraemos las fiilas de datos
     table_data = []

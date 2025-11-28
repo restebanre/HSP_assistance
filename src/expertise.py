@@ -127,19 +127,22 @@ class ExpertiseAnalyzer:
         return [ngram for ngram, count in ngram_freq.most_common(top_n)]
 
     def add_ngrams_column(
-            self, keywords: List[str], new_column_name: str = 'Keywords'
+            self, n: int = 3, list_ngrams: List[str] = "", new_column_name: str = 'Keywords'
                             ) -> None:
         """
         Añade una nueva columna al DataFrame con las palabras clave que coinciden
         con el expertise del investigador
 
-        :param keywords: Lista de palabras clave de interés
+        :param n: numero de gramas
+        :param list_ngrams: Lista de palabras clave de interés
         :param new_column_name: Nombre de la nueva columna
         :return: None
         """
         self.df[new_column_name] = self.df[self.text_column].apply(
-            lambda text: ', '.join([word for word in keywords if word in
-        self.clean_and_tokenize(text)])
+            lambda text: ', '.join(
+                [ngram for ngram in list_ngrams if ngram in ' '.join(
+                    self.extract_ngrams(self.clean_and_tokenize(text), n=n))])
         )
+        return
 
 
